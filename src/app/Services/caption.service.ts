@@ -20,7 +20,8 @@ export class CaptionService {
       
   public generateCaption(credentials: object): Observable<any> {
     console.log(credentials);
-    const url = 'https://git.heroku.com/fyp-image-caption-generator/predict';
+    
+    const url = 'https://fyp-image-caption-generator.herokuapp.com/predict';
 
     return this.http.post(url, credentials)
     .pipe(
