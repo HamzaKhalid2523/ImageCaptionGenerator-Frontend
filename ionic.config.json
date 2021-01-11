@@ -1,7 +1,8 @@
 {
   "name": "ImageCaptionGenerator",
   "integrations": {
-    "cordova": {}
+    "cordova": {},
+    "capacitor": {}
   },
   "type": "angular"
 }

@@ -14,14 +14,29 @@ import { map, catchError } from 'rxjs/operators';
 })
 export class CaptionService {
 
-    constructor(
-        private http: HttpClient
-      ) { }
+  hostedUrl: any = 'https://fyp-image-caption-generator.herokuapp.com';
+  localUrl: any = 'http://localhost:5000';
+
+  constructor(
+      private http: HttpClient
+    ) { }
       
   public generateCaption(credentials: object): Observable<any> {
     console.log(credentials);
     
-    const url = 'https://fyp-image-caption-generator.herokuapp.com/predict';
+    const url = `${this.localUrl}/predict`;
+
+    return this.http.post(url, credentials)
+    .pipe(
+      map((response: Response) => response),
+      catchError(this.handleError)
+    );
+  }
+      
+  public generateOTP(credentials: object): Observable<any> {
+    console.log(credentials);
+    
+    const url = `${this.localUrl}/predict2`;
 
     return this.http.post(url, credentials)
     .pipe(

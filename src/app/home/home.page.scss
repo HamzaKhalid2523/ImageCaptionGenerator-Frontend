@@ -7,16 +7,17 @@ input[type="file"] {
 }
 
 .caption {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 280px;
+  height: 380px;
   background: #eee;
   border-top: 3px solid #aaa;
   border-top-left-radius: 50px;
   border-top-right-radius: 50px;
   animation: animatop 1.2s cubic-bezier(0.425, 1.14, 0.47, 1.125) forwards;
+  overflow: scroll;
 
   .close {
     position: absolute;
@@ -31,6 +32,16 @@ input[type="file"] {
       border: 1px solid #777;
       border-radius: 15px;
     }
+  }
+
+  .content {
+    width: 80%;
+    margin: auto;
+    padding: 20px 10px;
+    line-height: 2;
+    letter-spacing: 2.4px;
+    color: #063c52;
+    font-family: "Lucida Console", "Courier New", monospace;
   }
 }
 

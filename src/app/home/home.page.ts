@@ -1,8 +1,13 @@
 import { CaptionService } from './../Services/caption.service';
-import { CaptionResultComponent } from './../caption-result/caption-result.component';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Camera } from '@ionic-native/camera/ngx';
-import { ModalController, ToastController, Platform } from '@ionic/angular';
+import { Platform } from '@ionic/angular';
+import {
+  Plugins,
+  Capacitor,
+  CameraSource,
+  CameraResultType
+} from '@capacitor/core';
 
 function dataURLtoFile(dataurl, filename) {
   let arr = dataurl.split(','),
@@ -26,16 +31,41 @@ export class HomePage {
   @ViewChild('filePicker') filePickerRef: ElementRef<HTMLInputElement>;
   imgUrl: any;
   captionGenerated: any;
+  resultGenerated: any;
 
   constructor(
     private camera: Camera,
-    private toastCtrl: ToastController,
-    private modalCtrl: ModalController,
     private platform: Platform,
     private captionService: CaptionService
   ) {}
 
+  ngOnInit() {}
+
+  capTureImageOnDesktop() {
+    console.log('Hello');
+    Plugins.Camera.getPhoto({
+      quality: 90,
+      source: CameraSource.Prompt,
+      correctOrientation: true,
+      height: 320,
+      width: 200,
+      resultType: CameraResultType.DataUrl
+    })
+    .then((res) => {
+      console.log(res);
+      this.imgUrl = res.dataUrl;
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  }
+
   captureImageFromCamera() {
+    if (Capacitor.isPluginAvailable('Camera')) {
+      this.capTureImageOnDesktop();
+      return;
+    }
+
     if (this.platform.is("cordova")) {
       this.camera.getPicture({
         sourceType: this.camera.PictureSourceType.CAMERA,
@@ -78,6 +108,7 @@ export class HomePage {
     fr.onload = () => {
       const dataUrl = fr.result.toString();
       this.imgUrl = dataUrl;
+      console.log(this.imgUrl);
       this.captionGenerated = false;
     };
     fr.readAsDataURL(pickedFile);
@@ -98,8 +129,37 @@ export class HomePage {
     } else {
       imageFile = this.imgUrl;
     }
+    console.log(imageFile);
 
     this.captionService.generateCaption({
+      image: imageFile
+    })
+      .subscribe(
+        (response) => {
+          console.log(response);
+        }, (error) => {
+          console.log(error);
+        }
+      )
+  }
+
+  async generateOTP() {
+    if(!this.imgUrl) { return; }
+    this.captionGenerated = true;
+
+    let imageFile;
+    if (typeof this.imgUrl === 'string') {
+      try {
+        imageFile = dataURLtoFile(this.imgUrl, 'caption-img.jpeg');        
+      } catch (error) {
+        console.log(error);
+        return;
+      }
+    } else {
+      imageFile = this.imgUrl;
+    }
+
+    this.captionService.generateOTP({
       image: imageFile
     })
       .subscribe(
